@@ -12,9 +12,9 @@ Each student scans their ID to log in, then the barcode of any parts they wish t
 ![maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
 
 ## 🔗 Links to RHIT Robomasters
-[![discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://github.com/Ben-McDaniel)\
-[![instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.linkedin.com/in/ben-mcdaniel-b00924215?trk=people-guest_people_search-card&original_referer=https%3A%2F%2Fwww.linkedin.com%2Fpub%2Fdir%3FfirstName%3DBen%26lastName%3DMcDaniel%26trk%3Dpeople-guest_people-search-bar_search-submit)\
-[![youtube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://twitter.com/sn1ck3t)
+[![discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/jRsZXSR5GN)\
+[![instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/rhit_robomasters/)\
+[![youtube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/channel/UCGW1ZwIHp_8FW-VaD9GT_aw)
 
 
 ## Authors
