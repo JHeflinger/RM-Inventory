@@ -1,0 +1,7 @@
+create a file matching privateDataeg.py
+just remove the eg from the name and 
+paste your PAT on the local machine.
+
+the gitignore file will keep the PAT from
+being uploaded allowing you to safely store
+it in plaintext
