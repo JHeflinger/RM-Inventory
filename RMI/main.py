@@ -9,10 +9,7 @@ global password
 userStatus = "default" #can be default, user, or admin
 username = ""
 password = ""
-commands = {"help"      : "brings up a list of available commands", 
-            "quit"      : "exit the application",
-            "login"     : "log into a personal account for further access",
-            "signup"    : "sign up for a new account"}
+commands = "\thelp - brings up a list of available commands \n \tquit - exit the application \n \tlogin - log into a personal account for further access \n \tsignup - sign up for a new account"
 
 #print funcs for convenience
 def sysPrint(inputStr):
@@ -28,8 +25,8 @@ def usrPrint(inputStr):
 def handleInput(inputStr):
     if inputStr == "h" or inputStr == "help":
         sysPrint("available commands:")
-        for str in commands:
-            print("\t" + str[0:1] + "/" + str + " - " + commands[str])
+
+        print(commands)
     elif inputStr == "q" or inputStr == "quit":
         sysPrint("end command read. Shutting down application...")
         return
