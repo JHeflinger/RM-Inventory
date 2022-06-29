@@ -57,12 +57,12 @@ def signUp():
     newUser.append(input())
     sysPrint("Please enter a passcode")
     usrPrint("passcode: ")
-    newUser.append(input())
+    newUser.append((hashlib.md5(input().encode()).hexdigest()))
     sysPrint("Enter your admin code here if you have recieved one. Otherwise, leave blank.")
     usrPrint("admin code: ")
     adminCode = input()
     if (hashlib.md5(adminCode.encode()).hexdigest()) != "" and (hashlib.md5(adminCode.encode()).hexdigest()) != "14f1ff22fac48a7dfff8951d27a16b52":
-        sysPrint("Invalid admin code recieved. Do you want to continue signing up as a regular user? (y/n)")
+        sysPrint("You have not submitted a correct admin code, continue signing up as a regular user? (y/n)")
         usrPrint("")
         yOrN = input()
         while yOrN != "y" and yOrN != "n":
@@ -107,7 +107,7 @@ def loginUser():
     usrPrint("username: ")
     tmpUsername = input()
     usrPrint("password: ")
-    tmpPassword = input() #from getpass import getpass password = getpass()
+    tmpPassword = (hashlib.md5(input().encode()).hexdigest()) #from getpass import getpass password = getpass()
     foundUser = False
     with open("users.csv" , newline = '') as csvfile:
         reader = csv.reader(csvfile, delimiter = ' ', quotechar = '|')
