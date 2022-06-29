@@ -96,7 +96,7 @@ def signUp():
         with open("users.csv", 'a+', newline='') as writefile:
             csv_writer = writer(writefile)
             csv_writer.writerow(newUser)
-        sysPrint("Successfully signed up as a new user! Please verify you properly signed in by loggin into the network. If any problems occur, please contact an administrator.")
+        sysPrint("Successfully signed up as a new user! Please verify you properly signed in by loggin into the network. If any problems occur, please contact Ben or Jason.")
 
 #login user func
 def loginUser():
@@ -129,9 +129,9 @@ def loginUser():
                     elif rowlist[3] == tmpUsername:
                         foundUser = True
         if foundUser:
-            sysPrint("Error: wrong password for entered user. Are you sure you entered the correct password? If still unable to log in, please contact an administrator.")
+            sysPrint("Error: wrong password for entered user. Are you sure you entered the correct password? If still unable to log in, please contact Ben or Jason.")
         else:
-            sysPrint("Error: unable to find entered user. Are you sure you entered the correct information? If still unable to log in, please contact an administrator.")
+            sysPrint("Error: unable to find entered user. Are you sure you entered the correct information? If still unable to log in, please contact Ben or Jason.")
 
 #main functionality
 usrPrint("")
