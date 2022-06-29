@@ -1,5 +1,6 @@
 import csv
 from csv import writer
+import hashlib
 print("SYSTEM >> Welcome to RMI Version 0.01 (Console side)! Please begin typing in commands below:")
 
 #variables
@@ -60,7 +61,7 @@ def signUp():
     sysPrint("Enter your admin code here if you have recieved one. Otherwise, leave blank.")
     usrPrint("admin code: ")
     adminCode = input()
-    if adminCode != "" and adminCode != "80085":
+    if (hashlib.md5(adminCode.encode()).hexdigest()) != "" and (hashlib.md5(adminCode.encode()).hexdigest()) != "14f1ff22fac48a7dfff8951d27a16b52":
         sysPrint("Invalid admin code recieved. Do you want to continue signing up as a regular user? (y/n)")
         usrPrint("")
         yOrN = input()
@@ -72,7 +73,7 @@ def signUp():
             return
         else:
            adminCode = "default"
-    elif adminCode == "80085":
+    elif (hashlib.md5(adminCode.encode()).hexdigest()) == "14f1ff22fac48a7dfff8951d27a16b52":
         adminCode = "admin"
     else:
         adminCode = "default"
