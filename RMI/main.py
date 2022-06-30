@@ -61,7 +61,7 @@ def signUp():
     sysPrint("Enter your admin code here if you have recieved one. Otherwise, leave blank.")
     usrPrint("admin code: ")
     adminCode = input()
-    if (hashlib.md5(adminCode.encode()).hexdigest()) != "" and (hashlib.md5(adminCode.encode()).hexdigest()) != "14f1ff22fac48a7dfff8951d27a16b52":
+    if (hashlib.md5(adminCode.encode()).hexdigest()) != "d41d8cd98f00b204e9800998ecf8427e" and (hashlib.md5(adminCode.encode()).hexdigest()) != "14f1ff22fac48a7dfff8951d27a16b52":
         sysPrint("You have not submitted a correct admin code, continue signing up as a regular user? (y/n)")
         usrPrint("")
         yOrN = input()
@@ -79,6 +79,7 @@ def signUp():
         adminCode = "default"
     newUser.append(adminCode)
     dupUsr = False
+    dupID = False
     with open("users.csv", newline = '') as csvfile:
         reader = csv.reader(csvfile, delimiter = " ", quotechar = '|')
         rowStr = ""
@@ -90,13 +91,17 @@ def signUp():
             rowlist = rowStr.split(',')
             if newUser[3] == rowlist[3]:
                 dupUsr = True
+            if newUser[2] == rowlist[2]:
+                dupID = True
     if dupUsr:
         sysPrint("Error: entered username has already been used by another user. Unable to sign up with given information.")
+    elif dupID:
+        sysPrint("Error: entered banner ID has already been used for another account. If you'd like to modify this account instead, login as this account or contact either Ben or Jason.")
     else:
         with open("users.csv", 'a+', newline='') as writefile:
             csv_writer = writer(writefile)
             csv_writer.writerow(newUser)
-        sysPrint("Successfully signed up as a new user! Please verify you properly signed in by loggin into the network. If any problems occur, please contact Ben or Jason.")
+        sysPrint("Successfully signed up as a new user! Please verify you properly signed in by logging into the network. If any problems occur, please contact Ben or Jason.")
 
 #login user func
 def loginUser():
