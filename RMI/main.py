@@ -4,14 +4,20 @@ import hashlib
 print("SYSTEM >> Welcome to RMI Version 0.01 (Console side)! Please begin typing in commands below:")
 
 #variables
-global commands
+global universalCommands
+global defaultCommands
+global userCommands
+global adminCommands
 global userStatus
 global username
 global password
 userStatus = "default" #can be default, user, or admin
 username = ""
 password = ""
-commands = "\thelp - brings up a list of available commands \n\tquit - exit the application \n\tlogin - log into a personal account for further access \n\tsignup - sign up for a new account"
+universalCommands = "\thelp - brings up a list of available commands \n\tquit - exit the application"
+defaultCommands = "\tlogin - log into a personal account for further access \n\tsignup - sign up for a new account"
+userCommands = "\tlogout - log out of your account"
+adminCommands = "\tmanage - manage system users"
 
 #print funcs for convenience
 def sysPrint(inputStr):
@@ -27,13 +33,20 @@ def usrPrint(inputStr):
 def handleInput(inputStr):
     if inputStr == "h" or inputStr == "help":
         sysPrint("available commands:")
-        print(commands)
+        print(universalCommands)
+        if userStatus == "default":
+            print(defaultCommands)
+        elif userStatus == "user":
+            print(userCommands)
+        elif userStatus == "admin":
+            print(userCommands)
+            print(adminCommands)
     elif inputStr == "q" or inputStr == "quit":
         sysPrint("end command read. Shutting down application...")
         return
-    elif inputStr == "l" or inputStr == "login":
+    elif inputStr == "l" or inputStr == "login" and userStatus == "default":
         loginUser()
-    elif inputStr == "s" or inputStr == "signup":
+    elif inputStr == "s" or inputStr == "signup" and userStatus == "default":
         signUp()
     else:
         sysPrint("invalid command read. Please type in the command \"h\" or \"help\" for a list of available commands.")
@@ -72,11 +85,11 @@ def signUp():
         if yOrN == "n":
             return
         else:
-           adminCode = "default"
+           adminCode = "user"
     elif (hashlib.md5(adminCode.encode()).hexdigest()) == "14f1ff22fac48a7dfff8951d27a16b52":
         adminCode = "admin"
     else:
-        adminCode = "default"
+        adminCode = "user"
     newUser.append(adminCode)
     dupUsr = False
     dupID = False
@@ -129,7 +142,7 @@ def loginUser():
                         username = tmpUsername
                         password = tmpPassword
                         userStatus = rowlist[5]
-                        sysPrint("Welcome back " + rowlist[0] + "! You have been sucessfully logged in as a(n) " + userStatus + " user!")
+                        sysPrint("Welcome back " + rowlist[0] + "! You have been sucessfully logged in as a(n) " + userStatus + "!")
                         return
                     elif rowlist[3] == tmpUsername:
                         foundUser = True
