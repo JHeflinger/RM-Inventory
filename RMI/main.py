@@ -44,14 +44,37 @@ def handleInput(inputStr):
     elif inputStr == "q" or inputStr == "quit":
         sysPrint("end command read. Shutting down application...")
         return
-    elif inputStr == "l" or inputStr == "login" and userStatus == "default":
+    elif (inputStr == "l" or inputStr == "login") and userStatus == "default":
         loginUser()
-    elif inputStr == "s" or inputStr == "signup" and userStatus == "default":
+    elif (inputStr == "s" or inputStr == "signup") and userStatus == "default":
         signUp()
+    elif (inputStr == "l" or inputStr == "logout") and userStatus != "default":
+        logout()
     else:
         sysPrint("invalid command read. Please type in the command \"h\" or \"help\" for a list of available commands.")
     usrPrint("")
     handleInput(input())
+
+#log out of current account
+def logout():
+    global userStatus
+    global username
+    global password
+    sysPrint("Are you sure you'd like to log out? (y/n)")
+    usrPrint("")
+    yOrN = input()
+    while yOrN != "y" and yOrN != "n":
+        sysPrint("invalid input recieved. Please type in \"y\" or \"n\".")
+        usrPrint("")
+        yOrN = input()
+    if yOrN == "n":
+        sysPrint("Canceled logout procedure.")
+        return
+    else:
+        userStatus = "default"
+        username = ""
+        password = ""
+    sysPrint("Successfully logged out! To log in again or as another user, please use the \"l\" or \"login\" command.")
 
 #sign up for a new account
 def signUp():
@@ -83,6 +106,7 @@ def signUp():
             usrPrint("")
             yOrN = input()
         if yOrN == "n":
+            sysPrint("Canceled signup procedure.")
             return
         else:
            adminCode = "user"
