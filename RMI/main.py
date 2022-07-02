@@ -14,7 +14,7 @@ global password
 userStatus = "default" #can be default, user, or admin
 username = ""
 password = ""
-universalCommands = "\thelp - brings up a list of available commands \n\tquit - exit the application"
+universalCommands = "\thelp - brings up a list of available commands \n\tquit - exit the application \n\tupdate - update the application"
 defaultCommands = "\tlogin - log into a personal account for further access \n\tsignup - sign up for a new account"
 userCommands = "\tlogout - log out of your account"
 adminCommands = "\tmanage - manage system users"
@@ -117,7 +117,7 @@ def signUp():
     newUser.append(adminCode)
     dupUsr = False
     dupID = False
-    with open("users.csv", newline = '') as csvfile:
+    with open("psuedo_db/users.csv", newline = '') as csvfile:
         reader = csv.reader(csvfile, delimiter = " ", quotechar = '|')
         rowStr = ""
         for row in reader:
@@ -135,7 +135,7 @@ def signUp():
     elif dupID:
         sysPrint("Error: entered banner ID has already been used for another account. If you'd like to modify this account instead, login as this account or contact either Ben or Jason.")
     else:
-        with open("users.csv", 'a+', newline='') as writefile:
+        with open("psuedo_db/users.csv", 'a+', newline='') as writefile:
             csv_writer = writer(writefile)
             csv_writer.writerow(newUser)
         sysPrint("Successfully signed up as a new user! Please verify you properly signed in by logging into the network. If any problems occur, please contact Ben or Jason.")
@@ -151,7 +151,7 @@ def loginUser():
     usrPrint("password: ")
     tmpPassword = (hashlib.md5(input().encode()).hexdigest()) #from getpass import getpass password = getpass()
     foundUser = False
-    with open("users.csv" , newline = '') as csvfile:
+    with open("psuedo_db/users.csv" , newline = '') as csvfile:
         reader = csv.reader(csvfile, delimiter = ' ', quotechar = '|')
         for row in reader:
             if len(row) > 0:
