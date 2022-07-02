@@ -47,7 +47,7 @@ def main():
         time.sleep(10)
 
 def compare(recent_datetime):
-    with open('RMI/inventory_git_integration/commitLog.csv') as csv_file:
+    with open('/RMI/inventory_git_integration/commitLog.csv') as csv_file:
         #read most recent commit stored commit 
         #and clean it to match output format
         csv_reader = list(csv.reader(csv_file, delimiter=','))
@@ -63,13 +63,13 @@ def compare(recent_datetime):
         #compare most recent commit with stored
         if cleanedStr == str(recent_datetime):
             #write most recent commit to end of 'commitLog.csv' and return false
-            with open('RMI/inventory_git_integration/commitLog.csv', mode='a') as commit_log:
+            with open('/RMI/inventory_git_integration/commitLog.csv', mode='a') as commit_log:
                 csv_writer = csv.writer(commit_log, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 csv_writer.writerow([recent_datetime])
             return False
 
     #write most recent commit to end of 'commitLog.csv' and return true
-    with open('RMI/inventory_git_integration/commitLog.csv', mode='a') as commit_log:
+    with open('/RMI/inventory_git_integration/commitLog.csv', mode='a') as commit_log:
         csv_writer = csv.writer(commit_log, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         csv_writer.writerow([recent_datetime])
     return True
