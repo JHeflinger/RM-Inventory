@@ -9,13 +9,16 @@ import stat
 from os import path
 
 
-local_path = "/Users/heflinjn/Documents/repos/RM-Inventory"
+local_path = "C:/Users/heflinjn/Documents/repos/RM-Inventory"
 username = "AutoGitBot"
 password = pwd.token
 target_repo = f"https://{username}:{password}@github.com/JHeflinger/RM-Inventory"
 
 localrepo = git.Repo(local_path)
 repoRemote = git.remote.Remote(localrepo, "origin")
+
+#machines will need to either run this command or store their credentials in .git/config
+#git.Repo.clone_from(target_repo, local_path)
 
 def main():
     #used for displaying approx. runtime and 
@@ -47,31 +50,47 @@ def main():
         time.sleep(10)
 
 def compare(recent_datetime):
-    with open('/RMI/inventory_git_integration/commitLog.csv') as csv_file:
+    with open('commitLog.csv') as csv_file:
         #read most recent commit stored commit 
         #and clean it to match output format
         csv_reader = list(csv.reader(csv_file, delimiter=','))
         cleanedStr = str(csv_reader[-1])
         cleanedStr = cleanedStr[2:len(cleanedStr)-2]
 
-        #display information about commit history
-        print('-----------')
-        print(cleanedStr)
-        print(recent_datetime)
-        print("Last Recorded Change:",cleanedStr)
-
         #compare most recent commit with stored
         if cleanedStr == str(recent_datetime):
             #write most recent commit to end of 'commitLog.csv' and return false
-            with open('/RMI/inventory_git_integration/commitLog.csv', mode='a') as commit_log:
+            with open('commitLog.csv', mode='a') as commit_log:
                 csv_writer = csv.writer(commit_log, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 csv_writer.writerow([recent_datetime])
             return False
 
     #write most recent commit to end of 'commitLog.csv' and return true
-    with open('/RMI/inventory_git_integration/commitLog.csv', mode='a') as commit_log:
+    with open('commitLog.csv', mode='a') as commit_log:
         csv_writer = csv.writer(commit_log, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         csv_writer.writerow([recent_datetime])
     return True
 
-main()
+def gitPull():
+    commits = list(localrepo.iter_commits())
+    recent_Commit=commits[0].committed_datetime
+    if compare(recent_Commit):
+        repoRemote.pull()
+
+def gitCommit(filepath, commitMessage):
+    try:
+        localrepo.git.add(filepath)
+        localrepo.index.commit(commitMessage)
+        return True
+    except:
+        return False
+
+def gitPush():
+    try:
+        origin = localrepo.remote(name="origin")
+        origin.push()
+        return True
+    except:
+        return False
+
+print(gitPush())
