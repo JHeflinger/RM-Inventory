@@ -93,4 +93,4 @@ def gitPush():
     except:
         return False
 
-print(gitPush())
+gitCommit("psuedo_db/users.csv", "uyu")

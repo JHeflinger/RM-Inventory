@@ -1,6 +1,7 @@
 import csv
 from csv import writer
 import hashlib
+import githelper
 print("SYSTEM >> Welcome to RMI Version 0.01 (Console side)! Please begin typing in commands below:")
 
 #variables
@@ -18,6 +19,14 @@ universalCommands = "\thelp - brings up a list of available commands \n\tquit - 
 defaultCommands = "\tlogin - log into a personal account for further access \n\tsignup - sign up for a new account"
 userCommands = "\tlogout - log out of your account"
 adminCommands = "\tmanage - manage system users"
+
+#deletes last line in user file in case fail to push
+def deleteLastLine():
+    f = open('psuedo_db/users.csv', "r+")
+    lines = f.readlines()
+    lines.pop()
+    f = open('psuedo_db/users.csv', "w+")
+    f.writelines(lines)
 
 #print funcs for convenience
 def sysPrint(inputStr):
@@ -78,6 +87,12 @@ def logout():
 
 #sign up for a new account
 def signUp():
+    #check for connection with git pull and pull any possible changes
+    if githelper.gitPull() == False:
+        sysPrint("Error: Could not connect to the database. Please check your connection and try again.")
+        return
+    
+    #create new user and ask for info
     newUser = []
     sysPrint("Please enter your full name here")
     usrPrint("name: ")
@@ -97,6 +112,8 @@ def signUp():
     sysPrint("Enter your admin code here if you have recieved one. Otherwise, leave blank.")
     usrPrint("admin code: ")
     adminCode = input()
+
+    #handle verifying admin info
     if (hashlib.md5(adminCode.encode()).hexdigest()) != "d41d8cd98f00b204e9800998ecf8427e" and (hashlib.md5(adminCode.encode()).hexdigest()) != "14f1ff22fac48a7dfff8951d27a16b52":
         sysPrint("You have not submitted a correct admin code, continue signing up as a regular user? (y/n)")
         usrPrint("")
@@ -115,6 +132,8 @@ def signUp():
     else:
         adminCode = "user"
     newUser.append(adminCode)
+
+    #check for duplicate usernames or banner IDs and add to users.csv if possible
     dupUsr = False
     dupID = False
     with open("psuedo_db/users.csv", newline = '') as csvfile:
@@ -130,6 +149,8 @@ def signUp():
                 dupUsr = True
             if newUser[2] == rowlist[2]:
                 dupID = True
+
+    #handle errors and upload to git if successful
     if dupUsr:
         sysPrint("Error: entered username has already been used by another user. Unable to sign up with given information.")
     elif dupID:
@@ -138,10 +159,21 @@ def signUp():
         with open("psuedo_db/users.csv", 'a+', newline='') as writefile:
             csv_writer = writer(writefile)
             csv_writer.writerow(newUser)
-        sysPrint("Successfully signed up as a new user! Please verify you properly signed in by logging into the network. If any problems occur, please contact Ben or Jason.")
+        gitSuccess = githelper.gitCommit("psuedo_db/users.csv", "New")
+        if gitSuccess:
+            gitSuccess = githelper.gitPush()
+        if gitSuccess:
+            sysPrint("Successfully signed up as a new user! Please verify you properly signed in by logging into the network. If any problems occur, please contact Ben or Jason.")
+        else:
+            deleteLastLine()
+            sysPrint("Error occurred during upload. Please check for any network connection errors or git credential errors on this machine.")
 
 #login user func
 def loginUser():
+    #check for connection with git pull and pull any possible changes
+    if githelper.gitPull() == False:
+        sysPrint("Error: Could not connect to the database. Please check your connection and try again.")
+        return
     global username
     global password
     global userStatus
