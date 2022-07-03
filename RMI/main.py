@@ -159,7 +159,7 @@ def signUp():
         with open("psuedo_db/users.csv", 'a+', newline='') as writefile:
             csv_writer = writer(writefile)
             csv_writer.writerow(newUser)
-        gitSuccess = githelper.gitCommit("psuedo_db/users.csv", "New")
+        gitSuccess = githelper.gitCommit("RMI/psuedo_db/users.csv", "New")
         if gitSuccess:
             gitSuccess = githelper.gitPush()
         if gitSuccess:
