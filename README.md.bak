@@ -7,9 +7,6 @@ This is implemented on a Raspberry Pi 3, with a permentantly attached barcode sc
 
 Each student scans their ID to log in, then the barcode of any parts they wish to check out to themselves. To add parts to a robot, a custom ID has been made that gets scanned first, then the process is the same.
 
-Dependencies:
-	- GitPython (pip3 install GitPython)
-
 ![pi]( 	https://img.shields.io/badge/Raspberry%20Pi-A22846?style=for-the-badge&logo=Raspberry%20Pi&logoColor=white)
 ![python](https://img.shields.io/badge/Python-14354C?style=for-the-badge&logo=python&logoColor=white)\
 ![maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
