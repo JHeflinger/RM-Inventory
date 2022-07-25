@@ -113,14 +113,9 @@ def scanSystem():
             print("\t\t" + b)
     else:
         if code in bannerIDs:
-            scanItems(code)
-            scanSystem()
-            return
+            print("yoooo")
         sysPrint("SCANSYSTEM CRITICAL ERROR - COMMAND NOT RECOGNIZED")
     scanSystem()
-
-def scanItems(bannerID):
-    sysPrint("NOW SCANNING ITEMS")
 
 def getBannerUsers():
     bannerIDs = []
