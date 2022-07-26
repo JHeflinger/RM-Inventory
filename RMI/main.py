@@ -111,6 +111,9 @@ def scanSystem():
     elif code == "listusers -o":
         for b in bannerIDs:
             print("\t\t" + b)
+    elif code == "register" or code == "000000000":
+        sysPrint("NOW REGISTERING ITEMS...")
+        registerItems()
     else:
         if code in bannerIDs:
             scanItems(code)
@@ -118,6 +121,28 @@ def scanSystem():
             return
         sysPrint("SCANSYSTEM CRITICAL ERROR - COMMAND NOT RECOGNIZED")
     scanSystem()
+
+def registerItems():
+    sysPrint("listening for type of item to register...")
+    usrPrint("REGISTER ID: ")
+    code = input()
+    if code == "register" or code == "000000000":
+        sysPrint("done registering items!")
+        return
+    sysPrint("NOW REGISTERING " + code + " ITEMS")
+    registerContents(code)
+    registerItems()
+
+def registerContents(catagory):
+    sysPrint("listening for next item to register...")
+    usrPrint("ID: ")
+    code = input()
+    if code == catagory:
+        sysPrint("done registering " + catagory + " items")
+        return
+    with open("psuedo_db/inventory.csv", "a") as f:
+        f.write(code + "," + catagory + ",HOME,GOOD\n")
+    registerContents(catagory)
 
 def scanItems(bannerID):
     sysPrint("NOW SCANNING ITEMS")
