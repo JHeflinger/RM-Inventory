@@ -1,0 +1,6 @@
+add update status implementation
+add M5 monitoring
+add status neopixel
+add data collection and analyzing
+add email sending compatability
+add end of quarter reports and return reminders

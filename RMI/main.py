@@ -13,7 +13,9 @@ global userStatus
 global username
 global password
 global offline
+global fakeDatabase
 offline = False
+fakeDatabase = []
 userStatus = "default" #can be default, user, or admin
 username = ""
 password = ""
@@ -103,6 +105,12 @@ def getRawInput(myInput):
 
 #handle scanning system
 def scanSystem():
+    if offline == False:
+        if githelper.gitPull() == False:
+            sysPrint("Error: Could not connect to the database. Please check your connection and try again.")
+            scanSystem()
+            return
+    global fakeDatabase
     usrPrint("SCAN ID: ")
     code = input()
     bannerIDs = getBannerUsers()
@@ -114,13 +122,41 @@ def scanSystem():
     elif code == "register" or code == "000000000":
         sysPrint("NOW REGISTERING ITEMS...")
         registerItems()
+        if offline == False:
+            global username
+            pushInventory(username, "approved new registration for items")
     else:
         if code in bannerIDs:
+            with open("psuedo_db/inventory.csv", "r") as f:
+                fakeDatabase = f.readlines()
+            sysPrint("NOW SCANNING ITEMS")
             scanItems(code)
+            with open("psuedo_db/inventory.csv", "w") as f:
+                f.writelines(fakeDatabase)
+            if offline == False:
+                pushInventory(getUserFromBannerID(code), "checked in/out new items")
             scanSystem()
             return
         sysPrint("SCANSYSTEM CRITICAL ERROR - COMMAND NOT RECOGNIZED")
     scanSystem()
+
+def getUserFromBannerID(bannerID):
+    with open("psuedo_db/users.csv", "r") as f:
+        users = f.readlines()
+        for u in users:
+            line = u.split(",")
+            if line[2] == bannerID:
+                return line[0]
+    return "invalid banner ID"
+
+def pushInventory(user, action):
+    gitSuccess = githelper.gitCommit("RMI/psuedo_db/inventory.csv", user + " " + action)
+    if gitSuccess:
+        gitSuccess = githelper.gitPush()
+    if gitSuccess:
+        sysPrint("Successfully pushed inventory changes!")
+    else:
+        sysPrint("Error occurred during upload. Please check for any network connection errors or git credential errors on this machine.")
 
 def registerItems():
     sysPrint("listening for type of item to register...")
@@ -145,7 +181,30 @@ def registerContents(catagory):
     registerContents(catagory)
 
 def scanItems(bannerID):
-    sysPrint("NOW SCANNING ITEMS")
+    global fakeDatabase
+    sysPrint("listening for next item to check out...")
+    usrPrint("ID: ")
+    code = input()
+    if code == bannerID:
+        sysPrint("finished scanning items")
+        return
+    found = False
+    for i in range(len(fakeDatabase)):
+        d2 = fakeDatabase[i].split(",")
+        if code == d2[0]:
+            found = True
+            if d2[2] == bannerID:
+                d2[2] = "HOME"
+            else:
+                d2[2] = bannerID
+            newline = ""
+            for j in d2:
+                newline += j.__str__() + ","
+            fakeDatabase[i] = newline[0:len(newline) - 1]
+            break;
+    if found == False:
+        sysPrint("error: item not registered and therefore could not be checked out.")
+    scanItems(bannerID)
 
 def getBannerUsers():
     bannerIDs = []
