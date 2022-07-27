@@ -163,7 +163,6 @@ def pushInventory(user, action):
     gitSuccess = githelper.gitCommit("RMI/psuedo_db/inventory.csv", user + " " + action)
     if gitSuccess:
         gitSuccess = githelper.gitPush()
-        sysPrint("uploading to online database...please do not interrupt")
     if gitSuccess:
         sysPrint("Successfully pushed inventory changes!")
     else:

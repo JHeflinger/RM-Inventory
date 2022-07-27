@@ -1,4 +1,5 @@
-add update status implementation
+add update command
+add activity log
 add M5 monitoring
 add status neopixel
 add data collection and analyzing
