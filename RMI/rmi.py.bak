@@ -45,6 +45,11 @@ def usrPrint(inputStr):
         return
     print(username + " << " + inputStr, end="")
 
+def toggleOffline():
+    global offline
+    offline = not offline
+    return offline
+
 #recursively looping main input function
 def handleInput(inputStr):
     if inputStr == "h" or inputStr == "help":
@@ -196,6 +201,14 @@ def updateItems():
     updateInventory(newStatus)
     updateItems()
 
+def updateApp():
+    if githelper.gitPull() == False:
+        print("Error: Could not connect to the database. Please check your connection and try again.")
+        return False
+    else:
+        print( "Successfully updated! Please restart application for changes to take place.")
+        return True
+
 def updateInventory(newStatus):
     global fakeDatabase
     global activityMessage
@@ -232,7 +245,7 @@ def registerItems():
     sysPrint("NOW REGISTERING " + code + " ITEMS")
     activityMessage += (code + "[")
     registerContents(code)
-    activityMessage += "]"
+    activityMessage += "] "
     registerItems()
 
 def registerContents(catagory):
@@ -309,6 +322,9 @@ def logout():
         username = ""
         password = ""
     sysPrint("Successfully logged out! To log in again or as another user, please use the \"l\" or \"login\" command.")
+
+def qtSignUp(fullname, email, bannerID, newUsername, newPassword, repeatPassword, adminCode):
+    print("yay")
 
 #sign up for a new account
 def signUp():
@@ -411,6 +427,34 @@ def updateActivityLog(log):
     if gitSuccess:
         gitSuccess = githelper.gitPush()
     return gitSuccess
+
+def qtLoginUser(tmpUsername, tmpPassword):
+    global username
+    global password
+    tmpPassword = (hashlib.md5(tmpPassword.encode()).hexdigest())
+    foundUser = False
+    with open("psuedo_db/users.csv" , newline = '') as csvfile:
+        reader = csv.reader(csvfile, delimiter = ' ', quotechar = '|')
+        for row in reader:
+            if len(row) > 0:
+                rowStr = ""
+                for r in row:
+                    rowStr += r
+                    rowStr += " "
+                rowStr = rowStr[0:(len(rowStr) - 1)]
+                rowlist = rowStr.split(',')
+                if len(rowlist) == 6:
+                    if rowlist[3] == tmpUsername and rowlist[4] == tmpPassword:
+                        username = tmpUsername
+                        password = tmpPassword
+                        userStatus = rowlist[5]
+                        return "Success:" + rowlist[0] + ":" + userStatus
+                    elif rowlist[3] == tmpUsername:
+                        foundUser = True
+        if foundUser:
+            return "Error:wrong password for entered user. Are you sure you entered the correct password? If still unable to log in, please contact Ben or Jason."
+        else:
+            return "Error:unable to find entered user. Are you sure you entered the correct information? If still unable to log in, please contact Ben or Jason."
 
 #login user func
 def loginUser():

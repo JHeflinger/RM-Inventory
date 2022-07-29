@@ -114,7 +114,6 @@ class MainWindow(QMainWindow):
                     dlg2.exec()
                 else:
                     self.offlineButton.setStyleSheet("background-color: green; border-radius: 10px;")
-                    signedUp = rmi.qtSignUp(dlg.fullnameBox.text(), dlg.emailBox.text(), dlg.bannerIDBox.text(), dlg.usernameBox.text(), dlg.passwordBox.text(), dlg.confirmPasswordBox.text(), dlg.adminBox.text())
         else:
             print("Cancel!")
             
