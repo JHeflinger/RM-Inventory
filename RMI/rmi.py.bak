@@ -2,7 +2,7 @@ import csv
 from csv import writer
 import hashlib
 import githelper
-print("SYSTEM >> Welcome to RMI Version 0.01 (Console side)! Please begin typing in commands below:")
+from datetime import datetime
 
 #variables
 global universalCommands
@@ -14,7 +14,9 @@ global username
 global password
 global offline
 global fakeDatabase
+global activityMessage
 offline = False
+activityMessage = ""
 fakeDatabase = []
 userStatus = "default" #can be default, user, or admin
 username = ""
@@ -57,7 +59,7 @@ def handleInput(inputStr):
             print(adminCommands)
     elif inputStr == "q" or inputStr == "quit":
         sysPrint("end command read. Shutting down application...")
-        return
+        return False
     elif inputStr == "o" or inputStr == "offline":
         global offline
         if offline:
@@ -85,8 +87,7 @@ def handleInput(inputStr):
         executeCode()
     else:
         sysPrint("invalid command read. Please type in the command \"h\" or \"help\" for a list of available commands.")
-    usrPrint("")
-    handleInput(input())
+    return True
 
 #execute code command for debugging purposes
 def executeCode():
@@ -107,6 +108,8 @@ def getRawInput(myInput):
 #handle scanning system
 def scanSystem():
     global username
+    global activityMessage
+    activityMessage = username + " "
     if offline == False:
         if githelper.gitPull() == False:
             sysPrint("Error: Could not connect to the database. Please check your connection and try again.")
@@ -123,20 +126,23 @@ def scanSystem():
             print("\t\t" + b)
     elif code == "register" or code == "000000000":
         sysPrint("NOW REGISTERING ITEMS...")
+        activityMessage += "registered items: "
         registerItems()
         if offline == False:
-            pushInventory(username, "approved new registration for items")
+            pushInventory(username, "approved new registration for items", activityMessage)
     elif code == "update status" or code == "111111111":
         with open("psuedo_db/inventory.csv", "r") as f:
             fakeDatabase = f.readlines()
         sysPrint("NOW SCANNING ITEMS TO UPDATE")
+        activityMessage += "updated items: "
         updateItems()
         with open("psuedo_db/inventory.csv", "w") as f:
                 f.writelines(fakeDatabase)
         if offline == False:
-            pushInventory(username, "approved status change for items")
+            pushInventory(username, "approved status change for items", activityMessage)
     else:
         if code in bannerIDs:
+            activityMessage = getUserFromBannerID(code) + " checked out/returned: "
             with open("psuedo_db/inventory.csv", "r") as f:
                 fakeDatabase = f.readlines()
             sysPrint("NOW SCANNING ITEMS")
@@ -144,7 +150,7 @@ def scanSystem():
             with open("psuedo_db/inventory.csv", "w") as f:
                 f.writelines(fakeDatabase)
             if offline == False:
-                pushInventory(getUserFromBannerID(code), "checked in/out new items")
+                pushInventory(getUserFromBannerID(code), "checked in/out new items", activityMessage)
             scanSystem()
             return
         sysPrint("SCANSYSTEM CRITICAL ERROR - COMMAND NOT RECOGNIZED")
@@ -159,10 +165,12 @@ def getUserFromBannerID(bannerID):
                 return line[0]
     return "invalid banner ID"
 
-def pushInventory(user, action):
+def pushInventory(user, action, logmsg):
     gitSuccess = githelper.gitCommit("RMI/psuedo_db/inventory.csv", user + " " + action)
     if gitSuccess:
+        sysPrint("uploading to online database...please do not interrupt")
         gitSuccess = githelper.gitPush()
+        gitSuccess = updateActivityLog(logmsg)
     if gitSuccess:
         sysPrint("Successfully pushed inventory changes!")
     else:
@@ -170,12 +178,14 @@ def pushInventory(user, action):
 
 def updateItems():
     global validStatuses
+    global activityMessage
     newStatus = ""
     sysPrint("listening for status flag...")
     usrPrint("STATUS: ")
     code = input()
     if code == "update status" or code == "111111111":
         sysPrint("done updating status")
+        activityMessage = activityMessage[0:len(activityMessage) - 2]
         return
     elif code in validStatuses:
         newStatus = code
@@ -188,6 +198,7 @@ def updateItems():
 
 def updateInventory(newStatus):
     global fakeDatabase
+    global activityMessage
     sysPrint("listening for items...")
     usrPrint("ID: ")
     code = input()
@@ -199,6 +210,7 @@ def updateInventory(newStatus):
         d2 = fakeDatabase[i].split(",")
         if code == d2[0]:
             found = True
+            activityMessage += code + ": " + (d2[3])[0:len(d2[3]) - 1] + "->" + newStatus + ", "
             d2[3] = newStatus + "\n"
             newline = ""
             for j in d2:
@@ -210,6 +222,7 @@ def updateInventory(newStatus):
     updateInventory(newStatus)
 
 def registerItems():
+    global activityMessage
     sysPrint("listening for type of item to register...")
     usrPrint("REGISTER ID: ")
     code = input()
@@ -217,37 +230,47 @@ def registerItems():
         sysPrint("done registering items!")
         return
     sysPrint("NOW REGISTERING " + code + " ITEMS")
+    activityMessage += (code + "[")
     registerContents(code)
+    activityMessage += "]"
     registerItems()
 
 def registerContents(catagory):
+    global activityMessage
     sysPrint("listening for next item to register...")
     usrPrint("ID: ")
     code = input()
     if code == catagory:
+        activityMessage = activityMessage[0:len(activityMessage) - 2]
         sysPrint("done registering " + catagory + " items")
         return
+    activityMessage += (code + ", ")
     with open("psuedo_db/inventory.csv", "a") as f:
         f.write(code + "," + catagory + ",HOME,GOOD\n")
     registerContents(catagory)
 
 def scanItems(bannerID):
     global fakeDatabase
+    global activityMessage
     sysPrint("listening for next item to check out...")
     usrPrint("ID: ")
     code = input()
     if code == bannerID:
         sysPrint("finished scanning items")
+        activityMessage = activityMessage[0:len(activityMessage) - 2]
         return
     found = False
     for i in range(len(fakeDatabase)):
         d2 = fakeDatabase[i].split(",")
         if code == d2[0]:
             found = True
+            activityMessage += code + ": "
             if d2[2] == bannerID:
                 d2[2] = "HOME"
+                activityMessage += (bannerID + "->HOME, ")
             else:
                 d2[2] = bannerID
+                activityMessage += ("HOME->" + bannerID + ", ")
             newline = ""
             for j in d2:
                 newline += j.__str__() + ","
@@ -367,14 +390,27 @@ def signUp():
         with open("psuedo_db/users.csv", 'a+', newline='') as writefile:
             csv_writer = writer(writefile)
             csv_writer.writerow(newUser)
+        activitySuccess = updateActivityLog("New user " + newUser[3] + " added to users database")
         gitSuccess = githelper.gitCommit("RMI/psuedo_db/users.csv", "New user " + newUser[3] + " added to users database")
-        if gitSuccess:
+        if gitSuccess and activitySuccess:
             gitSuccess = githelper.gitPush()
-        if gitSuccess:
+        if gitSuccess and activitySuccess:
             sysPrint("Successfully signed up as a new user! Please verify you properly signed in by logging into the network. If any problems occur, please contact Ben or Jason.")
         else:
             deleteLastLine()
             sysPrint("Error occurred during upload. Please check for any network connection errors or git credential errors on this machine.")
+
+def updateActivityLog(log):
+    today = datetime.now()
+    numEntries = 0
+    with open("../activitylog.txt", "r") as f:
+        numEntries = len(f.readlines()) + 1
+    with open("../activitylog.txt", "a") as f:
+        f.write(log + "\n")
+    gitSuccess = githelper.gitCommit("activitylog.txt", "entry #" + numEntries.__str__())
+    if gitSuccess:
+        gitSuccess = githelper.gitPush()
+    return gitSuccess
 
 #login user func
 def loginUser():
@@ -417,6 +453,3 @@ def loginUser():
         else:
             sysPrint("Error: unable to find entered user. Are you sure you entered the correct information? If still unable to log in, please contact Ben or Jason.")
 
-#main functionality
-usrPrint("")
-handleInput(input())

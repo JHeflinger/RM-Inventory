@@ -1,4 +1,4 @@
-add activity log
+duplicate checking IDs on register
 add M5 monitoring
 add status neopixel
 add data collection and analyzing
