@@ -1,3 +1,4 @@
 New user scanbot added to users database
 New user yamy added to users database
 New user lol added to users database
+Jason registered items: 1234, 1235, 1236, 1237, 1238, 1239,
