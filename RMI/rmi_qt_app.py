@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import (
     QLabel,
     QMainWindow,
     QPushButton,
-    QTabWidget,
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
@@ -20,6 +19,26 @@ from PyQt5.QtWidgets import (
 global numBtns
 numBtns = 6
 
+class BootWindow(QWidget):
+    def __init__(self, main_window):
+        super().__init__()
+        layout = QVBoxLayout()
+        self.label = QLabel("Scanning System")
+        self.input = QLineEdit("")
+        self.mainWindow = main_window
+        self.input.returnPressed.connect(self.handleScanInput)
+        layout.addWidget(self.label)
+        layout.addWidget(self.input)
+        self.setLayout(layout)
+        self.showMaximized()
+
+    def handleScanInput(self):
+        command = self.input.text()
+        self.input.clear()
+        if command == "quit":
+            self.hide()
+            self.mainWindow.show()
+
 class MainWindow(QMainWindow):
 
     def __init__(self):
@@ -28,6 +47,9 @@ class MainWindow(QMainWindow):
         self.setFixedSize(QSize(300, 50*numBtns))
         layout = QVBoxLayout()
         
+        self.win = BootWindow(self)
+        self.win.hide()
+
         self.loginStatus = QLabel("Guest")
         
         self.offlineButton = QPushButton("", self)
@@ -49,6 +71,7 @@ class MainWindow(QMainWindow):
         updateBtn = QPushButton("Update")
         updateBtn.clicked.connect(self.update_clicked)
         self.bootBtn = QPushButton("Boot System")
+        self.bootBtn.clicked.connect(self.boot_clicked)
         self.bootBtn.setEnabled(False)
         
         layout.addLayout(headerbar)
@@ -62,6 +85,10 @@ class MainWindow(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
         
+    def boot_clicked(self, s):
+        self.win.show()
+        self.hide()
+
     def logout_clicked(self, s):
         self.loginStatus.setText("Guest")
         rmi.userStatus = "default"
