@@ -324,7 +324,49 @@ def logout():
     sysPrint("Successfully logged out! To log in again or as another user, please use the \"l\" or \"login\" command.")
 
 def qtSignUp(fullname, email, bannerID, newUsername, newPassword, repeatPassword, adminCode):
-    print(fullname + ", " + email + ", " + bannerID + ", " + newUsername + ", " + newPassword + ", " + repeatPassword + ", " + adminCode)
+    if newPassword != repeatPassword:
+        return "ERROR:passwords do not match"
+
+    newUser = [fullname, email, bannerID, newUsername, hashlib.md5(newPassword.encode()).hexdigest()]
+
+    #handle verifying admin info
+    if (hashlib.md5(adminCode.encode()).hexdigest()) != "d41d8cd98f00b204e9800998ecf8427e" and (hashlib.md5(adminCode.encode()).hexdigest()) != "14f1ff22fac48a7dfff8951d27a16b52":
+        return "ERROR:invalid admin code - please leave blank if signing up as a regular user."
+    elif (hashlib.md5(adminCode.encode()).hexdigest()) == "14f1ff22fac48a7dfff8951d27a16b52":
+        adminCode = "admin"
+    else:
+        adminCode = "user"
+    newUser.append(adminCode)
+
+    #check for duplicate usernames or banner IDs and add to users.csv if possible
+    dupUsr = False
+    dupID = False
+    with open("psuedo_db/users.csv", "r") as f:
+        rows = f.readlines()
+        for r in rows:
+            row = r.split(",")
+            if newUser[3] == row[3]:
+                dupUsr = True
+            if newUser[2] == row[2]:
+                dupID = True
+    
+    if dupUsr:
+        return "ERROR:entered username has already been used by another user. Unable to sign up with given information."
+    elif dupID:
+        return "ERROR:entered banner ID has already been used for another account. If you'd like to modify this account instead, login as this account or contact either Ben or Jason."
+    else:
+        with open("psuedo_db/users.csv", 'a+', newline='') as writefile:
+            csv_writer = writer(writefile)
+            csv_writer.writerow(newUser)
+        activitySuccess = updateActivityLog("New user " + newUser[3] + " added to users database")
+        gitSuccess = githelper.gitCommit("RMI/psuedo_db/users.csv", "New user " + newUser[3] + " added to users database")
+        if gitSuccess and activitySuccess:
+            gitSuccess = githelper.gitPush()
+        if gitSuccess and activitySuccess:
+            return "SUCCESS:Successfully signed up as a new user! Please verify you properly signed in by logging into the network. If any problems occur, please contact Ben or Jason."
+        else:
+            deleteLastLine()
+            return "ERROR: unkown error occurred during upload. Please check for any network connection errors or git credential errors on this machine."
 
 #sign up for a new account
 def signUp():
