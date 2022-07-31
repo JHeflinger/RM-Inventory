@@ -15,6 +15,7 @@ global password
 global offline
 global fakeDatabase
 global activityMessage
+global validTypes
 offline = False
 activityMessage = ""
 fakeDatabase = []
@@ -26,6 +27,11 @@ defaultCommands = "\tlogin - log into a personal account for further access \n\t
 userCommands = "\tlogout - log out of your account"
 adminCommands = "\tboot - boot up automated scanning system \n\texec - execute a code snippet"
 validStatuses = ["GOOD", "BROKEN", "MISSING", "FIXED", "BEYOND REPAIR", "DELETED"]
+validTypes = ["MOTOR", "ESC", "CABLE", "REF SYSTEM"]
+
+def getValidTypes():
+    global validTypes
+    return validTypes
 
 #deletes last line in user file in case fail to push
 def deleteLastLine():
@@ -109,6 +115,12 @@ def getRawInput(myInput):
     while "\\t" in myInput:
         myInput = myInput[0:myInput.index("\\t")] + "    " + myInput[myInput.index("\\t") + 2:len(myInput)]
     return myInput
+
+def getDataBase():
+    miniDB = []
+    with open("psuedo_db/inventory.csv", "r") as f:
+        miniDB = f.readlines()
+    return miniDB
 
 #handle scanning system
 def scanSystem():

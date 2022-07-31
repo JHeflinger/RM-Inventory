@@ -1,8 +1,10 @@
+from multiprocessing.dummy import active_children
 import sys
 import rmi
 import githelper
 
 from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QApplication,
     QLabel,
@@ -22,8 +24,14 @@ numBtns = 6
 class BootWindow(QWidget):
     def __init__(self, main_window):
         super().__init__()
+        self.state = "start"
+        self.desc = ""
+        self.activityMessage = ""
         layout = QVBoxLayout()
-        self.label = QLabel("Scanning System")
+        self.label = QLabel("IDLE")
+        self.label.setStyleSheet("background-color: yellow")
+        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setFont(QFont('Arial', 60))
         self.input = QLineEdit("")
         self.mainWindow = main_window
         self.input.returnPressed.connect(self.handleScanInput)
@@ -33,11 +41,59 @@ class BootWindow(QWidget):
         self.showMaximized()
 
     def handleScanInput(self):
+        print(self.state)
         command = self.input.text()
-        self.input.clear()
-        if command == "quit":
-            self.hide()
-            self.mainWindow.show()
+        self.input.clear() #TODO: item info, user info
+        if self.state == "start":
+            if command == "quit":
+                self.hide()
+                self.mainWindow.show()
+            elif command == "register":
+                self.state = "pre-register"
+                self.label.setText("SCAN ITEM TYPE TO REGISTER")
+                self.label.setStyleSheet("background-color: orange")
+        elif self.state == "pre-register":
+            if command == "register":
+                if not rmi.offline:
+                    self.activityMessage = self.activityMessage[0:len(self.activityMessage) - 2] + " AS " + self.desc
+                    rmi.pushInventory(rmi.username, "authorized registering items", self.activityMessage)
+                self.state = "start"
+                self.label.setText("IDLE")
+                self.label.setStyleSheet("background-color: yellow")
+                return
+            if not rmi.offline:
+                updated = rmi.updateApp()
+                if not updated:
+                    self.state = "start"
+                    self.label.setText("ERROR COULD NOT CONNECT")
+                    self.label.setStyleSheet("background-color: red")
+                    return
+            if command not in rmi.getValidTypes():
+                self.label.setText("ERROR NOT VALID ITEM TYPE")
+                self.label.setStyleSheet("background-color: red")
+                return
+            self.state = "register"
+            self.activityMessage = "REGISTERED: "
+            self.label.setText("LISTENING FOR " + command + " ITEMS")
+            self.label.setStyleSheet("background-color: green")
+            self.desc = command
+        elif self.state == "register":
+            if command == self.desc:
+                self.state = "pre-register"
+                self.label.setText("SCAN ITEM TYPE TO REGISTER")
+                self.label.setStyleSheet("background-color: orange")
+                return
+            database = rmi.getDataBase()
+            for row in database:
+                if command == row.split(",")[0]:
+                    self.label.setText("ERROR ITEM ALREADY REGISTERED")
+                    self.label.setStyleSheet("background-color: red")
+                    return
+            with open("psuedo_db/inventory.csv", "a") as f:
+                f.write(command + "," + self.desc + ",HOME,GOOD\n")
+            self.activityMessage += (command + ", ")
+            self.label.setText("REGISTERED " + command + " AS " + self.desc)
+            self.label.setStyleSheet("background-color: green")
 
 class MainWindow(QMainWindow):
 
