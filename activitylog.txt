@@ -7,3 +7,4 @@ New user usernameteset added to users database
 New user yae added to users database
 New user fix added to users database
 REGISTERED: 1234, 80085 AS MOTOR
+Jason registered items: MOTOR[090294032] 
