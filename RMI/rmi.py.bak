@@ -485,11 +485,11 @@ def searchUsers(str, username, email, bannerID, fullName, accountType):
         dbUsers = f.readlines()
     for u in dbUsers:
         row = u.split(",")
-        if ((username and str.casefold() in row[3].casefold()) or
-            (email and str.casefold() in row[1].casefold()) or
-            (bannerID and str.casefold() in row[2].casefold()) or
-            (fullName and str.casefold() in row[0].casefold()) or
-            (accountType and str.casefold() in row[5].casefold())):
+        if ((username and str in row[3]) or
+            (email and str in row[1]) or
+            (bannerID and str in row[2]) or
+            (fullName and str in row[0]) or
+            (accountType and str in row[5])):
             foundUsers.append(u)
     return foundUsers
 
@@ -500,10 +500,10 @@ def searchInventory(str, id, type, location, status):
         dbItems = f.readlines()
     for i in dbItems:
         row = i.split(",")
-        if ((id and str.casefold() in row[0].casefold()) or
-            (type and str.casefold() in row[1].casefold()) or
-            (location and str.casefold() in row[2].casefold()) or
-            (status and str.casefold() in row[3].casefold())):
+        if ((id and str in row[0]) or
+            (type and str in row[1]) or
+            (location and str in row[2]) or
+            (status and str in row[3])):
             foundItems.append(i)
     return foundItems
 

@@ -307,14 +307,13 @@ class ResultsDialog(QDialog):
                 resultsInfo.append(resultsLabels)
         index = 0
         for h in headerRow:
-            h.setStyleSheet("background-color: lightgray; border: 1px solid black;")
+            h.setStyleSheet("border: 1px solid blue;")
             gridLayout.addWidget(h, 0, index)
             index += 1
         row = 1
         for r in resultsInfo:
             col = 0
             for c in r:
-                c.setStyleSheet("border: 1px solid black;")
                 gridLayout.addWidget(c, row, col)
                 col += 1
             row += 1
