@@ -24,7 +24,7 @@ from PyQt5.QtWidgets import (
 )
 
 global numBtns
-numBtns = 8
+numBtns = 7
 
 class BootWindow(QWidget):
     def __init__(self, main_window):
@@ -49,6 +49,7 @@ class BootWindow(QWidget):
         print(self.state)
         command = self.input.text()
         self.input.clear() #TODO: item info, user info
+        bannerIDs = rmi.getBannerUsers()
         if self.state == "start":
             if command == "quit":
                 self.hide()
@@ -61,6 +62,51 @@ class BootWindow(QWidget):
                 self.state = "pre-statusupdate"
                 self.label.setText("SCAN NEW STATUS FLAG")
                 self.label.setStyleSheet("background-color: orange")
+            elif command in bannerIDs:
+                self.state = "checkout"
+                self.desc = command
+                self.label.setText("SCAN ITEMS TO CHECK OUT")
+                self.label.setStyleSheet("background-color: orange")
+        elif self.state == "checkout":
+            if command == self.desc:
+                if not rmi.offline:
+                    self.activityMessage = self.activityMessage[0:len(self.activityMessage) - 2]
+                    rmi.pushInventory(rmi.username, "authorized checking out items", self.activityMessage)
+                self.state = "start"
+                self.label.setText("IDLE")
+                self.label.setStyleSheet("background-color: yellow")
+                return
+            if not rmi.offline:
+                updated = rmi.updateApp()
+                if not updated:
+                    self.state = "start"
+                    self.label.setText("ERROR COULD NOT CONNECT")
+                    self.label.setStyleSheet("background-color: red")
+                    return
+            database = rmi.getDataBase()
+            found = False
+            oldDesc = ""
+            for i in range(len(database)):
+                newline = database[i].split(",")
+                if command == newline[0]:
+                    oldDesc = newline[2]
+                    newline[2] = self.desc
+                    newStr = ""
+                    for n in newline:
+                        newStr += (n + ",")
+                    database[i] = newStr[0:len(newStr) - 1]
+                    found = True
+                    break
+            if not found:
+                self.label.setText("ERROR ITEM NOT REGISTERED")
+                self.label.setStyleSheet("background-color: red")
+                return
+            else:
+                with open("psuedo_db/inventory.csv", "w") as f:
+                    f.writelines(database)
+                    self.activityMessage += (command + ", ")
+                    self.label.setText(rmi.getUserFromBannerID(self.desc) + " CHECKED OUT: " + command)
+                    self.label.setStyleSheet("background-color: green")
         elif self.state == "pre-statusupdate":
             if command == "statusupdate":
                 if not rmi.offline:
@@ -196,8 +242,6 @@ class MainWindow(QMainWindow):
         self.searchBtn = QPushButton("Search System")
         self.searchBtn.setEnabled(False)
         self.searchBtn.clicked.connect(self.search_clicked)
-        self.editBtn = QPushButton("Edit System")
-        self.editBtn.setEnabled(False)
         
         layout.addLayout(headerbar)
         layout.addWidget(self.loginBtn)
@@ -206,7 +250,6 @@ class MainWindow(QMainWindow):
         layout.addWidget(updateBtn)
         layout.addWidget(self.bootBtn)
         layout.addWidget(self.searchBtn)
-        layout.addWidget(self.editBtn)
         
         widget = QWidget()
         widget.setLayout(layout)
