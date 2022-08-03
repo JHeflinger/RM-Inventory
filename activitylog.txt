@@ -19,3 +19,4 @@ New user test added to users database
 
  AS 
 REGISTERED AS MOTOR
+UPDATED STATUS FOR: 95867:BROKEN=>GOOD
