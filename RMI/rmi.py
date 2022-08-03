@@ -33,6 +33,10 @@ def getValidTypes():
     global validTypes
     return validTypes
 
+def getValidStatuses():
+    global validStatuses
+    return validStatuses
+
 #deletes last line in user file in case fail to push
 def deleteLastLine():
     f = open('psuedo_db/users.csv', "r+")

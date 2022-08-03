@@ -57,6 +57,65 @@ class BootWindow(QWidget):
                 self.state = "pre-register"
                 self.label.setText("SCAN ITEM TYPE TO REGISTER")
                 self.label.setStyleSheet("background-color: orange")
+            elif command == "statusupdate":
+                self.state = "pre-statusupdate"
+                self.label.setText("SCAN NEW STATUS FLAG")
+                self.label.setStyleSheet("background-color: orange")
+        elif self.state == "pre-statusupdate":
+            if command == "statusupdate":
+                if not rmi.offline:
+                    self.activityMessage = self.activityMessage[0:len(self.activityMessage) - 2]
+                    rmi.pushInventory(rmi.username, "authorized changing status on items", self.activityMessage)
+                self.state = "start"
+                self.label.setText("IDLE")
+                self.label.setStyleSheet("background-color: yellow")
+                return
+            if not rmi.offline:
+                updated = rmi.updateApp()
+                if not updated:
+                    self.state = "start"
+                    self.label.setText("ERROR COULD NOT CONNECT")
+                    self.label.setStyleSheet("background-color: red")
+                    return
+            if command not in rmi.getValidStatuses():
+                self.label.setText("ERROR NOT VALID STATUS FLAG")
+                self.label.setStyleSheet("background-color: red")
+                return
+            self.state = "statusupdate"
+            self.activityMessage = "UPDATED STATUS FOR: "
+            self.label.setText("SCAN ITEM TO UPDATE")
+            self.label.setStyleSheet("background-color: green")
+            self.desc = command
+        elif self.state == "statusupdate":
+            if command == self.desc:
+                self.state = "pre-statusupdate"
+                self.label.setText("SCAN NEW STATUS FLAG")
+                self.label.setStyleSheet("background-color: orange")
+                return
+            database = rmi.getDataBase()
+            found = False
+            oldDesc = ""
+            for i in range(len(database)):
+                newline = database[i].split(",")
+                if command == newline[0]:
+                    oldDesc = (newline[3])[0:len(newline[3]) - 1]
+                    newline[3] = self.desc + "\n"
+                    newStr = ""
+                    for n in newline:
+                        newStr += (n + ",")
+                    database[i] = newStr[0:len(newStr) - 1]
+                    found = True
+                    break
+            if not found:
+                self.label.setText("ERROR ITEM NOT REGISTERED")
+                self.label.setStyleSheet("background-color: red")
+                return
+            else:
+                with open("psuedo_db/inventory.csv", "w") as f:
+                    f.writelines(database)
+                    self.activityMessage += (command + ":" + oldDesc + "=>" + self.desc + ", ")
+                    self.label.setText(command + ": " + oldDesc + " => " + self.desc)
+                    self.label.setStyleSheet("background-color: green")
         elif self.state == "pre-register":
             if command == "register":
                 if not rmi.offline:
