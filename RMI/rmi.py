@@ -348,9 +348,9 @@ def qtSignUp(fullname, email, bannerID, newUsername, newPassword, repeatPassword
     newUser = [fullname, email, bannerID, newUsername, hashlib.md5(newPassword.encode()).hexdigest()]
 
     #handle verifying admin info
-    if (hashlib.md5(adminCode.encode()).hexdigest()) != "d41d8cd98f00b204e9800998ecf8427e" and (hashlib.md5(adminCode.encode()).hexdigest()) != "14f1ff22fac48a7dfff8951d27a16b52":
+    if (hashlib.md5(adminCode.encode()).hexdigest()) != "d41d8cd98f00b204e9800998ecf8427e" and (hashlib.md5(adminCode.encode()).hexdigest()) != "87f37843c1e033f7efa88797fa9abe6f":
         return "ERROR:invalid admin code - please leave blank if signing up as a regular user."
-    elif (hashlib.md5(adminCode.encode()).hexdigest()) == "14f1ff22fac48a7dfff8951d27a16b52":
+    elif (hashlib.md5(adminCode.encode()).hexdigest()) == "87f37843c1e033f7efa88797fa9abe6f":
         adminCode = "admin"
     else:
         adminCode = "user"

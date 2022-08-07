@@ -283,7 +283,6 @@ class MainWindow(QMainWindow):
         self.logoutBtn.setEnabled(False)
         self.bootBtn.setEnabled(False)
         self.searchBtn.setEnabled(False)
-        self.editBtn.setEnabled(False)
         notify = notifyDialog("You have been successfully logged out!")
         notify.exec()
         
@@ -315,7 +314,6 @@ class MainWindow(QMainWindow):
                         self.searchBtn.setEnabled(True)
                         if msg[2] == "admin":
                             self.bootBtn.setEnabled(True)
-                            self.editBtn.setEnabled(True)
                         notify.exec()
         else:
             print("Cancel!")

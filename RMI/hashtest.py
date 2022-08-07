@@ -1,3 +1,3 @@
 import hashlib
-adminCode = "XXXXX"
+adminCode = "80085"
 print((hashlib.md5(adminCode.encode()).hexdigest()))
