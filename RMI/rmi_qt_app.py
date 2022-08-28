@@ -385,6 +385,7 @@ class ResultsDialog(QDialog):
             headerRow.append(QLabel("Banner ID"))
             headerRow.append(QLabel("Username"))
             headerRow.append(QLabel("Account Type"))
+            headerRow.append(QLabel("Edit"))
             for r in results:
                 row = r.split(",")
                 row.remove(row[4])
@@ -392,18 +393,25 @@ class ResultsDialog(QDialog):
                 resultsLabels = []
                 for item in row:
                     resultsLabels.append(QLabel(item))
+                editBtn = QPushButton("EDIT")
+                editBtn.clicked.connect(self.edit_clicked)
+                resultsLabels.append(editBtn)
                 resultsInfo.append(resultsLabels)
         elif type == 1:
             headerRow.append(QLabel("ID"))
             headerRow.append(QLabel("Type"))
             headerRow.append(QLabel("Location"))
             headerRow.append(QLabel("Status"))
+            headerRow.append(QLabel("Edit"))
             for r in results:
                 row = r.split(",")
                 resultsLabels = []
                 row[3] = row[3][0:len(row[3]) - 1]
                 for item in row:
                     resultsLabels.append(QLabel(item))
+                editBtn = QPushButton("EDIT")
+                editBtn.clicked.connect(self.edit_clicked)
+                resultsLabels.append(editBtn)
                 resultsInfo.append(resultsLabels)
         index = 0
         for h in headerRow:
@@ -424,6 +432,9 @@ class ResultsDialog(QDialog):
         scrollArea.setWidget(frame)
         layout.addWidget(scrollArea)
         self.setLayout(layout)
+
+    def edit_clicked(self):
+        print("editme")
     
 class SearchDialog(QDialog):
     def __init__(self):
