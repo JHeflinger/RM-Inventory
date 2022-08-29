@@ -391,10 +391,11 @@ class ResultsDialog(QDialog):
                 row.remove(row[4])
                 row[4] = row[4][0:len(row[4]) - 1]
                 resultsLabels = []
+                parameters = []
                 for item in row:
                     resultsLabels.append(QLabel(item))
-                editBtn = QPushButton("EDIT")
-                editBtn.clicked.connect(self.edit_clicked)
+                    parameters.append(item)
+                editBtn = EditBtn(parameters, headerRow)
                 resultsLabels.append(editBtn)
                 resultsInfo.append(resultsLabels)
         elif type == 1:
@@ -406,11 +407,12 @@ class ResultsDialog(QDialog):
             for r in results:
                 row = r.split(",")
                 resultsLabels = []
+                parameters = []
                 row[3] = row[3][0:len(row[3]) - 1]
                 for item in row:
                     resultsLabels.append(QLabel(item))
-                editBtn = QPushButton("EDIT")
-                editBtn.clicked.connect(self.edit_clicked)
+                    parameters.append(item)
+                editBtn = EditBtn(parameters, headerRow)
                 resultsLabels.append(editBtn)
                 resultsInfo.append(resultsLabels)
         index = 0
@@ -433,9 +435,44 @@ class ResultsDialog(QDialog):
         layout.addWidget(scrollArea)
         self.setLayout(layout)
 
-    def edit_clicked(self):
-        print("editme")
-    
+class EditBtn(QPushButton):
+    def __init__(self, parameters, header):
+        super().__init__()
+        self.setText("EDIT")
+        self.parameters = parameters
+        self.header = header
+        self.clicked.connect(self.btn_clicked)
+
+    def btn_clicked(self):
+        print(self.parameters)
+        dlg = EditDialog(self.parameters, self.header)
+        if dlg.exec():
+            print("editing now")
+            if len(dlg.widgets) > 4:
+                print("type 1")
+            else:
+                print("type 2")
+
+class EditDialog(QDialog):
+    def __init__(self, parameters, header):
+        super().__init__()
+        self.setWindowTitle("Edit Entry")
+        QBtn = QDialogButtonBox.Cancel | QDialogButtonBox.Ok
+        self.buttonBox = QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        self.widgets = []
+        self.layout = QVBoxLayout()
+
+        for i in range(len(parameters)):
+            self.layout.addWidget(QLabel(header[i].text()))
+            widget = QLineEdit(parameters[i])
+            self.layout.addWidget(widget)
+            self.widgets.append(widget)
+
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
 class SearchDialog(QDialog):
     def __init__(self):
         super().__init__()
