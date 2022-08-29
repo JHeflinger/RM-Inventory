@@ -264,7 +264,7 @@ class MainWindow(QMainWindow):
             elif dlg.searchChoice.currentIndex() == 1:
                 results = rmi.searchInventory(dlg.searchBox.text(), dlg.idBox.isChecked(), dlg.typeBox.isChecked(), dlg.locationBox.isChecked(), dlg.statusBox.isChecked())
             if len(results) <= 0:
-                dlg2 = notifyDialog("Error: No results found. Remember, spelling matters!")
+                dlg2 = NotifyDialog("Error: No results found. Remember, spelling matters!")
                 dlg2.exec()
             else:
                 dlg2 = ResultsDialog(results, dlg.searchChoice.currentIndex())
@@ -304,13 +304,13 @@ class MainWindow(QMainWindow):
                     loggedIn = rmi.qtLoginUser(dlg.usernameBox.text(), dlg.passwordBox.text())
                     msg = loggedIn.split(":")
                     if msg[0] == "Error":
-                        notify = notifyDialog("ERROR: " + msg[1])
+                        notify = NotifyDialog("ERROR: " + msg[1])
                         notify.exec()
                     else:
                         self.loginStatus.setText(msg[2] + ": " + msg[1])
                         self.loginBtn.setEnabled(False)
                         self.logoutBtn.setEnabled(True)
-                        notify = notifyDialog("Welcome back " + msg[1] + "! You have been sucessfully logged in as a(n) " + msg[2] + "!")
+                        notify = NotifyDialog("Welcome back " + msg[1] + "! You have been sucessfully logged in as a(n) " + msg[2] + "!")
                         self.searchBtn.setEnabled(True)
                         if msg[2] == "admin":
                             self.bootBtn.setEnabled(True)
@@ -334,10 +334,10 @@ class MainWindow(QMainWindow):
                     signedUp = rmi.qtSignUp(dlg.fullnameBox.text(), dlg.emailBox.text(), dlg.bannerIDBox.text(), dlg.usernameBox.text(), dlg.passwordBox.text(), dlg.confirmPasswordBox.text(), dlg.adminBox.text())
                     msg = signedUp.split(":")
                     if msg[0] == "ERROR":
-                        notify = notifyDialog("ERROR: " + msg[1])
+                        notify = NotifyDialog("ERROR: " + msg[1])
                         notify.exec()
                     else:
-                        notify = notifyDialog(msg[1])
+                        notify = NotifyDialog(msg[1])
                         notify.exec()
         else:
             print("Cancel!")
@@ -450,6 +450,21 @@ class EditBtn(QPushButton):
             print("editing now")
             if len(dlg.widgets) > 4:
                 print("type 1")
+                file = []
+                with open("psuedo_db/users.csv", "r") as f:
+                    file = f.readlines()
+                for i in range(len(file)):
+                    data = file[i].split(",")
+                    if dlg.oldparams[3] == data[3]:
+                        print("found user")
+                        #edit here
+                        dlg2 = NotifyDialog("Edit successful!")
+                        dlg2.exec()
+                        return
+                print("not found user")
+                dlg2 = NotifyDialog("Error: edit was not successful")
+                dlg2.exec()
+                return
             else:
                 print("type 2")
 
@@ -462,6 +477,7 @@ class EditDialog(QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.widgets = []
+        self.oldparams = parameters
         self.layout = QVBoxLayout()
 
         for i in range(len(parameters)):
@@ -539,7 +555,7 @@ class SearchDialog(QDialog):
             self.userSearch.hide()
             self.itemSearch.show()
     
-class notifyDialog(QDialog):
+class NotifyDialog(QDialog):
     def __init__(self, msg):
         super().__init__()
         self.setWindowTitle("Notification")
