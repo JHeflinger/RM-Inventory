@@ -35,3 +35,4 @@ REGISTERED: 1111, 2222, 3333, 4444, 5555 AS MOTOR
 UPDATED STATUS FOR: 1111:GOOD=>BROKEN, 2222:GOOD=>BROKEN, 3333:GOOD=>BROKEN, 4444:GOOD=>BROKEN
 New user blakesd added to users database
 New user agmui added to users database
+New user jacob added to users database
