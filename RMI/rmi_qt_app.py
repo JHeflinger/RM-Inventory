@@ -283,7 +283,7 @@ class MainWindow(QMainWindow):
         self.logoutBtn.setEnabled(False)
         self.bootBtn.setEnabled(False)
         self.searchBtn.setEnabled(False)
-        notify = notifyDialog("You have been successfully logged out!")
+        notify = NotifyDialog("You have been successfully logged out!")
         notify.exec()
         
     def login_clicked(self, s):
@@ -451,20 +451,37 @@ class EditBtn(QPushButton):
             if len(dlg.widgets) > 4:
                 print("type 1")
                 file = []
+                changed = False
                 with open("psuedo_db/users.csv", "r") as f:
                     file = f.readlines()
                 for i in range(len(file)):
                     data = file[i].split(",")
                     if dlg.oldparams[3] == data[3]:
                         print("found user")
-                        #edit here
+                        newparams = []
+                        for widget in dlg.widgets:
+                            newparams.append(widget.text())
+                        print(newparams)
+                        newdata = ""
+                        for j in range(len(newparams)):
+                            if j == 4:
+                                newdata += data[4] + ","
+                            newdata += newparams[j] + ","
+                        newdata = newdata[0:len(newdata) - 1] + "\n"
+                        print("old data: " + file[i])
+                        print("new data: " + newdata)
+                        file[i] = newdata
+                        #upload to git first
+                        with open("psuedo_db/users.csv", "w") as f:
+                            f.writelines(file)
                         dlg2 = NotifyDialog("Edit successful!")
                         dlg2.exec()
                         return
-                print("not found user")
-                dlg2 = NotifyDialog("Error: edit was not successful")
-                dlg2.exec()
-                return
+                if not changed:
+                    print("not found user")
+                    dlg2 = NotifyDialog("Error: edit was not successful")
+                    dlg2.exec()
+                    return
             else:
                 print("type 2")
 
@@ -653,4 +670,3 @@ window = MainWindow()
 window.show()
 
 app.exec()
-
