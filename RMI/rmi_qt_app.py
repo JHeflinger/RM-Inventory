@@ -471,11 +471,16 @@ class EditBtn(QPushButton):
                         print("old data: " + file[i])
                         print("new data: " + newdata)
                         file[i] = newdata
-                        #upload to git first
                         with open("psuedo_db/users.csv", "w") as f:
                             f.writelines(file)
-                        dlg2 = NotifyDialog("Edit successful!")
-                        dlg2.exec()
+                        if not rmi.offline:
+                            updated = rmi.pushAll()
+                            if not updated:
+                                dlg2 = updateDialog(updated)
+                                dlg2.exec()
+                            else:
+                                dlg2 = NotifyDialog("Edit successful!")
+                                dlg2.exec()
                         return
                 if not changed:
                     print("not found user")
@@ -503,11 +508,16 @@ class EditBtn(QPushButton):
                         print("old data: " + file[i])
                         print("new data: " + newdata)
                         file[i] = newdata
-                        #upload to git first
                         with open("psuedo_db/inventory.csv", "w") as f:
                             f.writelines(file)
-                        dlg2 = NotifyDialog("Edit successful!")
-                        dlg2.exec()
+                        if not rmi.offline:
+                            updated = rmi.pushAll()
+                            if not updated:
+                                dlg2 = updateDialog(updated)
+                                dlg2.exec()
+                            else:
+                                dlg2 = NotifyDialog("Edit successful!")
+                                dlg2.exec()
                         return
                 if not changed:
                     print("not found user")
