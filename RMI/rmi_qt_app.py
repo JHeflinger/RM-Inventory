@@ -484,6 +484,36 @@ class EditBtn(QPushButton):
                     return
             else:
                 print("type 2")
+                file = []
+                changed = False
+                with open("psuedo_db/inventory.csv", "r") as f:
+                    file = f.readlines()
+                for i in range(len(file)):
+                    data = file[i].split(",")
+                    if dlg.oldparams[0] == data[0]:
+                        print("found item")
+                        newparams = []
+                        for widget in dlg.widgets:
+                            newparams.append(widget.text())
+                        print(newparams)
+                        newdata = ""
+                        for j in range(len(newparams)):
+                            newdata += newparams[j] + ","
+                        newdata = newdata[0:len(newdata) - 1] + "\n"
+                        print("old data: " + file[i])
+                        print("new data: " + newdata)
+                        file[i] = newdata
+                        #upload to git first
+                        with open("psuedo_db/inventory.csv", "w") as f:
+                            f.writelines(file)
+                        dlg2 = NotifyDialog("Edit successful!")
+                        dlg2.exec()
+                        return
+                if not changed:
+                    print("not found user")
+                    dlg2 = NotifyDialog("Error: edit was not successful")
+                    dlg2.exec()
+                    return
 
 class EditDialog(QDialog):
     def __init__(self, parameters, header):
